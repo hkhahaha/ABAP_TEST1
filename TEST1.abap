@@ -282,8 +282,8 @@ CALL FUNCTION 'DOWNLOAD'
     GUI_REFUSE_FILETRANSFER = 6
     OTHERS  = 7.
  IF SY-SUBRC <> 0.
-* MESSAGE ID SY-MSGID TYPE SY-MSGTY NUMBER SY-MSGNO
-* WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
+ MESSAGE ID SY-MSGID TYPE SY-MSGTY NUMBER SY-MSGNO
+ WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
  ENDIF.
 
 TYPES:BEGIN OF MAN,
@@ -395,3 +395,359 @@ ULINE.
 LOOP AT ta_spfli INTO a_spfli.
   WRITE: / a_spfli-connid,a_spfli-carrid,a_spfli-cityfrom,a_spfli-cityto.
 ENDLOOP.
+DATA WA_SPFLI TYPE TABLE OF spfli WITH HEADER LINE.
+SELECT * INTO TABLE WA_SPFLI FROM spfli PACKAGE SIZE 4.
+LOOP AT WA_SPFLI.
+  WRITE: / WA_SPFLI-carrid,WA_SPFLI-cityfrom,WA_SPFLI-carrid.
+ENDLOOP.
+ULINE.
+ENDSELECT.
+
+DATA ytcity TYPE TABLE OF ytcity WITH HEADER LINE.
+SELECT * INTO TABLE ytcity FROM ytcity.
+
+LOOP AT ytcity.
+  WRITE: / ytcity-yct_id,ytcity-yct_name,ytcity-yct_cuntry.
+ENDLOOP.
+
+DATA:BEGIN OF ARCD,
+  CARRID TYPE spfli-carrid,
+  CONNID TYPE spfli-CONNID,
+  FLDATE TYPE SFLIGHT-FLDATE,
+  END OF ARCD.
+DATA ARCD1 LIKE ARCD.
+SELECT spfli~carrid spfli~CONNID SFLIGHT~FLDATE INTO ARCD1 FROM spfli INNER JOIN SFLIGHT
+  ON spfli~carrid = SFLIGHT~carrid
+    AND spfli~CONNID = SFLIGHT~CONNID UP TO 10 ROWS.
+  WRITE: / ARCD1-carrid,ARCD1-CONNID,ARCD1-FLDATE.
+ENDSELECT.
+
+WRITE:'123','345','456'.
+TABLES SPFLI.
+SKIP.
+
+
+
+WRITE : / SY-VLINE,(15)'航线承运人',SY-VLINE,(15) '航班连接',SY-VLINE,(15)'国家代码',
+          SY-VLINE,(15)'起飞城市',SY-VLINE,(15)'起飞机场',SY-VLINE.
+
+
+NEW-PAGE LINE-COUNT 10.
+SELECT * FROM SPFLI.
+WRITE: / SY-VLINE,(15) SPFLI-CARRID,SY-VLINE,(15)SPFLI-CONNID,SY-VLINE,(15)SPFLI-COUNTRYTO,
+         SY-VLINE,(15) SPFLI-CITYFROM,SY-VLINE,(15) SPFLI-AIRPFROM,SY-VLINE.
+
+
+ENDSELECT.
+FORMAT COLOR COL_HEADING.
+WRITE 'HELLO WORLD'.
+WRITE 'WELCOME!'.
+FORMAT COLOR COL_HEADING INVERSE ON.
+WRITE / 'HELLO WORLD'.
+WRITE 'WELCOME'.
+TABLES SPFLI.
+SKIP.
+FORMAT COLOR COL_HEADING.
+ULINE AT /(91).
+TABLES SPFLI.
+SKIP.
+FORMAT COLOR COL_HEADING.
+ULINE AT /(91).
+WRITE: / SY-VLINE,(15)'航线承运人',SY-VLINE,(15)'航班连接',SY-VLINE,
+      (15)'国家代码',SY-VLINE,(15)'起飞城市',SY-VLINE,
+      (15)'起飞机场',SY-VLINE.
+ULINE AT /(91).
+FORMAT COLOR OFF.
+SELECT * FROM SPFLI.
+   IF  SPFLI-CARRID = 'LH'.
+     FORMAT COLOR COL_NEGATIVE.
+   ELSE.
+     FORMAT COLOR OFF.
+   ENDIF.
+WRITE: / SY-VLINE,(15) SPFLI-CARRID,SY-VLINE,(15) SPFLI-CONNID,SY-VLINE,
+      (15)SPFLI-COUNTRYTO,SY-VLINE,(15)SPFLI-CITYFROM,SY-VLINE,(15) SPFLI-AIRPFROM,SY-VLINE.
+  ULINE AT /(91).
+ENDSELECT.
+START-OF-SELECTION.
+  WRITE '请按'.
+  FORMAT HOTSPOT ON COLOR 6 INVERSE ON.
+  WRITE '热点'.
+  FORMAT HOTSPOT OFF COLOR OFF.
+  AT LINE-SELECTION.
+    WRITE 'WELCOME'.
+START-OF-SELECTION.
+WRITE:'初始列表,SY-LSIND=',SY-LSIND.
+
+AT LINE-SELECTION.
+  IF SY-LSIND = 1.
+    WRITE: '第二列表，SY-LSIND =',SY-LSIND.
+  ENDIF.
+START-OF-SELECTION.
+SET PF-STATUS'STA1'.
+WRITE 'TEST'.
+AT USER-COMMAND.
+  CASE SY-UCOMM.
+    WHEN 'OWNSL'.
+      WRITE:'已经选择'.
+  ENDCASE.
+START-OF-SELECTION.
+  SET PF-STATUS 'STA1'.
+  WRITE:'测试工具条按钮'.
+
+AT USER-COMMAND.
+  CASE sy-ucomm.
+    WHEN 'OWNSEL'.
+      IF sy-lsind = 1.
+        SET PF-STATUS 'STA6'.
+      ENDIF.
+      WINDOW STARTING AT 10 10 ENDING AT 30 20.
+      WRITE '在子窗口输出！'.
+      WRITE:'请注意'.
+ENDCASE.
+TABLES:spfli,sflight.
+
+START-OF-SELECTION.
+  SKIP.
+
+  ULINE AT /(91).
+  WRITE: / sy-vline,(15)'航线承运人',sy-vline,(15)'航班连接',sy-vline,
+          (15)'国家代码',sy-vline,(15)'起飞城市',sy-vline,
+          (15)'起飞机场',sy-vline.
+  ULINE AT /(91).
+  SELECT * FROM spfli.
+    WRITE: / sy-vline,(15) spfli-carrid,sy-vline,
+                      (15) spfli-connid,sy-vline,
+                      (15) spfli-countryto,sy-vline,
+                      (15) spfli-cityfrom,sy-vline,
+                      (15) spfli-airpfrom,sy-vline.
+    HIDE:spfli-carrid,spfli-connid.
+    ULINE AT /(91).
+  ENDSELECT.
+
+AT LINE-SELECTION.
+  IF sy-lsind = 1.
+    SELECT * FROM sflight
+      WHERE carrid = spfli-carrid AND connid = spfli-connid.
+      WRITE: / sflight-carrid,sy-vline,sflight-connid,sy-vline,
+               sflight-fldate,sy-vline,sflight-price.
+    ENDSELECT.
+  ENDIF.
+TABLES:spfli.
+DATA:sela(1) TYPE c,
+     numl    TYPE i.
+
+START-OF-SELECTION.
+  SKIP.
+  ULINE AT /(95).
+  WRITE: / sy-vline,'',sy-vline,  (15) '航线承运人',sy-vline,
+          (15)'航班连接',sy-vline, (15) '国家代码', sy-vline,
+          (15)'起飞城市',sy-vline, (15)'起飞机场',sy-vline.
+  ULINE AT /(95).
+  SELECT * FROM spfli.
+    WRITE: / sy-vline,sela AS CHECKBOX,sy-vline,(15)spfli-carrid,
+          sy-vline,(15)spfli-connid,sy-vline,(15)spfli-countryto,
+          sy-vline,(15)spfli-cityfrom,sy-vline,(15)spfli-airpfrom,sy-vline.
+    HIDE:spfli-carrid,spfli-connid,spfli-countryto,spfli-cityfrom,spfli-airpfrom.
+    ULINE AT /(95).
+    HIDE sela.
+  ENDSELECT.
+
+END-OF-SELECTION.
+  numl = sy-lsind - 1.
+
+AT LINE-SELECTION.
+  IF sy-lsind = 1.
+    DO numl TIMES.
+      READ LINE sy-index FIELD VALUE sela.
+      IF sela = 'X'.
+        WRITE: / spfli-carrid,spfli-connid,spfli-countryto,spfli-cityfrom,spfli-airpfrom.
+      ENDIF.
+    ENDDO.
+  ENDIF.
+PARAMETERS: A1(10) TYPE C,
+            A2     TYPE I.
+WRITE: / A1,/ A2.
+DATA DATA1(20) TYPE C.
+SELECT-OPTIONS D1 FOR DATA1.
+LOOP AT D1.
+  WRITE: /'SIGN:', D1-SIGN,
+          'OPTIONS:', D1-OPTION,
+          'LOW:',D1-LOW,
+          'HIGH:',D1-HIGH.
+ENDLOOP.
+
+  DATA:ok_code TYPE sy-ucomm,
+       save_ok LIKE ok_code.
+  DATA sp1 LIKE TABLE OF spfli WITH HEADER LINE.
+
+  SELECT * INTO CORRESPONDING FIELDS OF TABLE sp1 FROM spfli.
+
+
+  CALL SCREEN 100.
+MODULE user_command_0100 INPUT.
+  save_ok = ok_code.
+  CLEAR ok_code.
+  CASE save_ok.
+    WHEN 'EXIT'.
+      LEAVE PROGRAM.
+  ENDCASE.
+ENDMODULE.
+
+MODULE status_0100 OUTPUT.
+  SET PF-STATUS 'STATUS1'.
+ENDMODULE.
+DATA wa_spfli LIKE TABLE OF spfli WITH HEADER LINE.
+SELECT * INTO TABLE wa_spfli FROM spfli.
+CALL FUNCTION 'REUSE_ALV_LIST_DISPLAY'
+  EXPORTING
+    i_structure_name = 'SPFLI'
+  TABLES
+    t_outtab         = wa_spfli
+  EXCEPTIONS
+    program_error    = 1
+    OTHERS           = 2.
+IF sy-subrc <> 0.
+  MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+ENDIF.
+
+DATA: S1 TYPE I,
+      SUM TYPE I.
+      S1 = 123.
+WRITE S1.
+CONSTANTS PI TYPE P DECIMALS 5 VALUE '3.1415926'.
+WRITE PI.
+WRITE: / SPACE,
+        SY-DATUM.
+TYPES:BEGIN OF MYLIST,
+  NAME(10) TYPE C,
+  AGE(4)   TYPE I,
+  END OF MYLIST.
+CONSTANTS:CNAME(10) VALUE '生活',
+BIRTH_DAY TYPE D VALUE '19960427'.
+WRITE: / CNAME,
+         BIRTH_DAY.
+TABLES:SPFL.
+WRITE '第一行'CENTERED.
+WRITE /(4) '不知道多少行'.
+WRITE '测试内容' RIGHT-JUSTIFIED.
+
+WRITE 'TEST1'.
+SKIP 6.
+WRITE 'TEST2'.
+DATA: F1 VALUE 'Y',
+      F2 VALUE 'x'.
+WRITE: / 'CHECK F1:',F1 AS CHECKBOX.
+WRITE: / 'CHECK F2:',F2 AS CHECKBOX.
+DATA:F1(10) VALUE 'ABCDEFG',
+      F2(5).
+F2 = F1+3(5)."测试的位置
+WRITE F2.
+DATA: BEGIN OF ADDRESS,
+  FIRSTNAME(10) VALUE 'TEST1',
+  LASTNAME(10) VALUE 'TEST2',
+  TEL(12) VALUE '12345',
+  END OF ADDRESS.
+DATA:BEGIN OF NAME,
+  FIRSTNAME(10),
+  LASTNAME(10),
+  E_MAIL(30),
+  END OF NAME.
+MOVE-CORRESPONDING ADDRESS TO NAME.
+WRITE / ADDRESS.
+WRITE / NAME.
+DATA:NAME(20) VALUE 'SOURCE',
+      SOURCE(10) VALUE 'LILY',
+      TARGET(10).
+WRITE (NAME) TO TARGET.
+WRITE / TARGET.
+DATA N TYPE I VALUE 100.
+CLEAR N.
+DATA: hours   TYPE i,
+      minutes TYPE i,
+      t2      TYPE t VALUE '200000',
+      t1      TYPE t VALUE '183000'.
+hours = ( t2 - t1 ) / 3600. "计算有几小时
+minutes = ( t2–t1 ) / 60. "计算几分钟
+DATA: STRING(10) VALUE 'ABCDEFG',
+      STR1(3) VALUE 'DEF',
+      STR2(3) VALUE '123'.
+REPLACE STR1 WITH STR2 INTO STRING.
+WRITE / STRING.
+IF 3 > 8.
+  WRITE / '3>8'.
+ELSE .
+  WRITE / '3!>8'.
+  ENDIF.
+DATA S(1) type c.
+      s = 'a'.
+      case s.
+      when 'x'.
+        WRITE / 'string is x'.
+        WHEN others.
+        WRITE / 'string is not x'.
+      ENDCASE.
+DO 2 TIMES.
+  WRITE / 'x'.
+ENDDO.
+DO  varying i from 1 to 10.
+  s=s+i.
+ENDDO.
+WRITE: / ,'1+@+#+4....=',s
+DO 3 TIMES.
+  IF sy-index = 2.
+    CONTINUE.
+  ENDIF.
+  WRITE  sy-index.
+ENDDO.
+DO 5 TIMES.
+  CHECK SY-INDEX BETWEEN 2 AND 4.
+  WRITE / SY-INDEX.
+ENDDO.
+DO 10 TIMES.
+  IF SY-INDEX = 8.
+    EXIT.
+  ENDIF.
+  WRITE / SY-INDEX.
+ENDDO.
+DATA: BEGIN OF LINE,
+  COL1 TYPE I,
+  COL2 TYPE I,
+  END OF LINE.
+DATA ITAB LIKE LINE OCCURS 10.
+DO 2 TIMES.
+  LINE-COL1 = SY-INDEX.
+  LINE-COL2 = SY-INDEX ** 2.
+  APPEND LINE TO ITAB.
+ENDDO.
+LOOP AT ITAB INTO LINE.
+  WRITE: / LINE-COL1,LINE-COL2.
+ENDLOOP.
+DATA:BEGIN OF ITAB OCCURS 3,
+  COL1(3) TYPE C,
+  COL2 TYPE I,
+  END OF ITAB.
+ITAB-COL1 = 'ABC'.ITAB-COL2 = 10.
+COLLECT ITAB.
+ITAB-COL1 = 'XYZ'.ITAB-COL2 = 20.
+COLLECT ITAB.
+ITAB-COL1 = 'ABC'.ITAB-COL2 = 30.
+COLLECT ITAB.
+LOOP AT ITAB.
+  WRITE: / ITAB-COL1,ITAB-COL2.
+ENDLOOP.
+DATA:BEGIN OF line,
+       col1 TYPE i,
+       col2 TYPE i,
+     END OF line.
+DATA itab LIKE line OCCURS 10.
+DO 3 TIMES.
+  line-col1 = sy-index * 10.
+  line-col2 = sy-index * 20.
+  APPEND line TO itab.
+ENDDO.
+line-col1 = 100.
+line-col2 = 200.
+INSERT line INTO itab INDEX 2.
+LOOP AT itab INTO line.
+  WRITE: / sy-tabix,line-col1,line-col2.
+endloop.
